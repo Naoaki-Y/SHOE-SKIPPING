@@ -44,15 +44,22 @@ public class Shoes : MonoBehaviour {
 
     public void OnReceiveHandler(ShoesInfo info)
 	{
+		Shoot(new Vector3((float)3.0f, (float)info.Y / 8.0f, (float)info.Z + 10.0f) * Mathf.Min((float)info.Speed, 20.0f));
+	}
+
+	public void Shoot(Vector3 force)
+	{
 		Rigidbody rigidBpdy ;
 
 		rigidBpdy = GetComponent<Rigidbody>( );
-		rigidBpdy.AddForce(new Vector3((float)10.0f, (float)info.Y / 10.0f, (float)info.Z) * Mathf.Min((float)info.Speed, 20.0f));
+		rigidBpdy.AddForce(force);
 
 		AudioSource audio ;
 
 		audio = GetComponent<AudioSource>( );
-		audio.Play( );
+		audio.PlayOneShot(audio.clip, audio.volume);
+
+		return;
 	}
 
 

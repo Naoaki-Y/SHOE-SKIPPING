@@ -6,16 +6,16 @@ public class PlayerCharacter : MonoBehaviour {
 
     [SerializeField]private float HEIGHT = 1.7f ;
 	[SerializeField]private GameObject _playerStart = null ;
-	[SerializeField]private GameObject _shoseObject = null ;
+	[SerializeField]private Shoes _shoseObject = null ;
 	[SerializeField]private GameObject _speedManager = null ;
 
 	private Camera _mainCamera ;
 
-	int speed = 0 ;
-
 
 	// Use this for initialization
 	void Start () {
+
+		Cursor.visible = false;
 		
 		if( null != _playerStart ){
 			transform.position = _playerStart.transform.position;
@@ -26,6 +26,7 @@ public class PlayerCharacter : MonoBehaviour {
 
 		if( null != _shoseObject ){
 			_shoseObject.transform.localScale = _shoseObject.transform.localScale * Mathf.Max((Assets.scripts.GlobalWork.playerHeight * 0.0001f), 0.1f);
+			_shoseObject.transform.position += Vector3.right * (Assets.scripts.GlobalWork.playerHeight * 0.0002f);
 		}
 
 	}
@@ -36,7 +37,7 @@ public class PlayerCharacter : MonoBehaviour {
         Ray ray;
 
         ray = new Ray(transform.position, Vector3.down);
-        if( false == Physics.Raycast(ray, Mathf.Max(Assets.scripts.GlobalWork.playerHeight * 0.01f, HEIGHT)) ){
+        if( false == Physics.Raycast(ray, Mathf.Max(Assets.scripts.GlobalWork.playerHeight * 0.001f, HEIGHT)) ){
             transform.position += Vector3.down * 1.0f;
         }
 
@@ -50,10 +51,7 @@ public class PlayerCharacter : MonoBehaviour {
 			_shoseObject.transform.position = transform.position + Vector3.down + Vector3.forward;
 		}
 		if( true == Input.GetKeyDown(KeyCode.Z) ){
-			Rigidbody rigidBpdy ;
-
-			rigidBpdy = _shoseObject.GetComponent<Rigidbody>( );
-			rigidBpdy.AddForce((Vector3.forward * 10 + Vector3.up * 2) * 20);
+			_shoseObject.Shoot((Vector3.forward * 10 + Vector3.up * 2) * 30);
 		}
 		}
 
@@ -61,17 +59,17 @@ public class PlayerCharacter : MonoBehaviour {
 			SwitchShoseView(_mainCamera.gameObject.transform.parent == transform);
 		}
 
-		if( true == Input.GetKeyDown(KeyCode.UpArrow) ){
-			speed ++;
-			_speedManager.SendMessage("UpdateNumber", speed);
-		}
-		if( true == Input.GetKeyDown(KeyCode.DownArrow) ){
-			speed --;
-			_speedManager.SendMessage("UpdateNumber", speed);
-		}
-
 		if( true == Input.GetKeyDown(KeyCode.Space) ){
 			UnityEngine.SceneManagement.SceneManager.LoadScene("result");
+		}
+
+		if( null != _speedManager ){
+			Rigidbody rigidBody ;
+			float speed ;
+
+			rigidBody = _shoseObject.GetComponent<Rigidbody>( );
+			speed = Vector3.Distance(Vector3.zero, rigidBody.velocity) * 12.0f;
+			_speedManager.SendMessage("UpdateNumber", (int)speed);
 		}
 
 	}
